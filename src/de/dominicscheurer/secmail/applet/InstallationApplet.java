@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -21,6 +22,7 @@ import javax.swing.SwingUtilities;
 import org.bouncycastle.openpgp.PGPException;
 
 import de.dominicscheurer.secmail.exceptions.AlreadyExistingKeyException;
+import de.dominicscheurer.secmail.model.IdentifierPasswordPair;
 import de.dominicscheurer.secmail.net.HttpsClient;
 import de.dominicscheurer.secmail.pgp.RSAKeyPairGenerator;
 
@@ -74,23 +76,24 @@ public class InstallationApplet extends JApplet {
 
     private void createGUI() {
         // Create and set up the content pane.
-        FeedbackGivingPanel<String[]> dataInputPanel = new DataInputPanel(nickName, realName);
+        FeedbackGivingPanel<IdentifierPasswordPair> dataInputPanel = new DataInputPanel(nickName, realName);
         setContentPane(dataInputPanel);
-        dataInputPanel.register(new FeedbackRecipient<String[]>() {
+        dataInputPanel.register(new FeedbackRecipient<IdentifierPasswordPair>() {
             @Override
-            public void receiveFeedback(String[] feedback) {
-                recvDataInputPanelFeedback(feedback[0], feedback[1]);
+            public void receiveFeedback(IdentifierPasswordPair feedback) {
+                recvDataInputPanelFeedback(feedback.getIdentifier(), feedback.getPassword());
             }
         });
     }
 
-    private void recvDataInputPanelFeedback(String identifier, String password) {
+    private void recvDataInputPanelFeedback(String identifier, char[] password) {
         try {
             setContentPane(new CenteredTextPanelPanel(
                     getMessage("KeysBeingGen")));
             validate();
 
             String publicKeyPath = RSAKeyPairGenerator.generateKeyPair(identifier, password);
+            Arrays.fill(password, '\0'); // Zero-out password
             
             setContentPane(new CenteredTextPanelPanel(
                     getMessage("Uploading")));

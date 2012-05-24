@@ -11,6 +11,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -96,6 +97,8 @@ public class RSAKeyPairGenerator {
                 new JcePBESecretKeyEncryptorBuilder(
                         PGPEncryptedData.CAST5,
                         sha1Calc).setProvider("BC").build(passPhrase));
+        
+        Arrays.fill(passPhrase, '\0'); // Zero-out password
 
         secretKey.encode(secretOut);
 
@@ -145,7 +148,7 @@ public class RSAKeyPairGenerator {
      * @throws PGPException
      * @throws AlreadyExistingKeyException 
      */
-    public static String generateKeyPair(String identity, String passPhrase)
+    public static String generateKeyPair(String identity, char[] passPhrase)
             throws NoSuchAlgorithmException,
             NoSuchProviderException,
             IOException,
@@ -187,7 +190,9 @@ public class RSAKeyPairGenerator {
                 kp.getPublic(),
                 kp.getPrivate(),
                 identity,
-                passPhrase.toCharArray());
+                passPhrase);
+        
+        Arrays.fill(passPhrase, '\0'); // Zero-out password
 
         // Success
         return pubKeyDestination;

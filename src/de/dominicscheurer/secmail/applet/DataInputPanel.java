@@ -10,6 +10,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.CharBuffer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -18,13 +21,15 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 
+import de.dominicscheurer.secmail.model.IdentifierPasswordPair;
+
 // ESCA-JAVA0100:
 /**
  * Panel takes identifier and password for key pair.
  * 
  * @author Dominic Scheurer
  */
-public class DataInputPanel extends FeedbackGivingPanel<String[]> {
+public class DataInputPanel extends FeedbackGivingPanel<IdentifierPasswordPair> {
     private static final long serialVersionUID = 1L;
 
     protected static final String SECURE_PWD_REGEX = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,100})";
@@ -206,12 +211,17 @@ public class DataInputPanel extends FeedbackGivingPanel<String[]> {
                 public void actionPerformed(ActionEvent arg0) {
                     // First:
                     // Check, if entered values are correct
+                    
+                    CharBuffer charBuffer = CharBuffer.wrap(pwdPassword.getPassword());                    
+                    Pattern pwdPattern = Pattern.compile(SECURE_PWD_REGEX);
+                    Matcher pwdMatcher = pwdPattern.matcher(charBuffer);
+                    
                     if (!((String)txtIdentifier.getSelectedItem()).isEmpty() &&
-                        new String(pwdPassword.getPassword()).matches(SECURE_PWD_REGEX)) {
-                        giveFeedback(new String[] {
-                           ((String)txtIdentifier.getSelectedItem()),
-                           new String(pwdPassword.getPassword())
-                        });
+                        pwdMatcher.matches()) {
+                        giveFeedback(
+                                new IdentifierPasswordPair(
+                                        ((String)txtIdentifier.getSelectedItem()),
+                                        pwdPassword.getPassword()));
                     } else {
                         getLblErrorMessage().setText(passwordInformationTxt);
                     }

@@ -35,7 +35,6 @@ public class HttpsClient {
 
     private static final String TRUSTSTORE_PWD = "Master4pres!";
     private static final String TRUSTSTORE_FILE = "dscheurer-truststore.jks";
-    //private static final String UPLOAD_PAGE = "https://dominic-scheurer.dyndns.org/index.html";
     
     private HttpsClient() {        
     }
@@ -56,11 +55,12 @@ public class HttpsClient {
             try {
                 trustStore.load(instream, TRUSTSTORE_PWD.toCharArray());
             } finally {
+                // ESCA-JAVA0008:
                 // ESCA-JAVA0166:
                 try {
                     instream.close();
                 } catch (Exception ignore) {
-                    ignore.printStackTrace();
+                    // Nothing done here, wouldn't change anything
                 }
             }
 
