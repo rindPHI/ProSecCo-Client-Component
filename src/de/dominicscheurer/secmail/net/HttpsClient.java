@@ -34,7 +34,7 @@ import org.apache.http.util.EntityUtils;
 public class HttpsClient {
 
     private static final String TRUSTSTORE_PWD = "Master4pres!";
-    private static final String TRUSTSTORE_FILE = "dscheurer-truststore.jks";
+    private static final String TRUSTSTORE_FILE = "/dscheurer-truststore.jks";
     
     private HttpsClient() {        
     }
@@ -51,10 +51,8 @@ public class HttpsClient {
             KeyStore trustStore = KeyStore.getInstance(KeyStore
                     .getDefaultType());
             
-            InputStream instream = HttpsClient.class.getResourceAsStream(TRUSTSTORE_FILE);
+            InputStream instream = new HttpsClient().getClass().getResourceAsStream(TRUSTSTORE_FILE);
             
-//            FileInputStream instream = new FileInputStream(new File(
-//                    TRUSTSTORE_FILE));
             try {
                 trustStore.load(instream, TRUSTSTORE_PWD.toCharArray());
             } finally {
