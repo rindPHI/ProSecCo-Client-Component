@@ -3,6 +3,9 @@ package de.dominicscheurer.secmail.applet;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
@@ -46,7 +49,7 @@ public class InstallationApplet extends JApplet {
     private ResourceBundle bundle;
 
     // Called when this applet is loaded into the browser.
-    public void init() {
+    public void init() {        
         instance = this;
         
         // Read parameters
@@ -132,10 +135,16 @@ public class InstallationApplet extends JApplet {
     }
 
     private void handleException(Exception e) {
+        final Writer stackTraceWriter = new StringWriter();
+        final PrintWriter printWriter = new PrintWriter(stackTraceWriter);
+        e.printStackTrace(printWriter);
+        
         setContentPane(new CenteredTextPanelPanel(
                 getMessage("SorryError") +
                 "\n" +
-                e.getMessage(), Color.RED));
+                e.getMessage() == null ? e.getClass().getName() : e.getMessage() +
+                "\nStack Trace:\n" +
+                stackTraceWriter.toString(), Color.RED));
         validate();
     }
 

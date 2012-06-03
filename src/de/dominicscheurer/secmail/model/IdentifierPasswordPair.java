@@ -16,6 +16,14 @@ public class IdentifierPasswordPair {
     public IdentifierPasswordPair(String identifier, char[] password) {
         this.identifier = identifier;
         this.password = password.clone();
+        
+        final IdentifierPasswordPair instance = this;
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {            
+            @Override
+            public void run() {
+                Arrays.fill(instance.password, '\0'); // Zero-out password
+            }
+        }));
     }
     
     public String getIdentifier() {

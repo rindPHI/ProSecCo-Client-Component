@@ -1,8 +1,8 @@
 package de.dominicscheurer.secmail.net;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
@@ -50,8 +50,11 @@ public class HttpsClient {
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore
                     .getDefaultType());
-            FileInputStream instream = new FileInputStream(new File(
-                    TRUSTSTORE_FILE));
+            
+            InputStream instream = HttpsClient.class.getResourceAsStream(TRUSTSTORE_FILE);
+            
+//            FileInputStream instream = new FileInputStream(new File(
+//                    TRUSTSTORE_FILE));
             try {
                 trustStore.load(instream, TRUSTSTORE_PWD.toCharArray());
             } finally {
